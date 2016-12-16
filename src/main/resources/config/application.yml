@@ -1,0 +1,24 @@
+application:
+  message: sb-ms-custdepl
+spring:
+  mvc:
+    view:
+       prefix: /WEB-INF/jsp/
+       suffix: .jsp
+    cloud:
+       config:
+         discovery:
+         enabled: true
+         serviceId: eurekaTest
+
+server:
+  port: 9973
+
+eureka:
+  instance:
+    hostname: localhost
+  client:
+    registerWithEureka: false
+    fetchRegistry: false
+    serviceUrl:
+      defaultZone: http://${eureka.instance.hostname}:${server.port}/eureka/

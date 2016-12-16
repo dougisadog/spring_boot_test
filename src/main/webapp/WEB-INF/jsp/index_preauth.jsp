@@ -72,8 +72,14 @@ a:hover {
     function onPayForm(){
        document.all.payForm.submit();
     }
-    function onPayUndoForm(){
-    	document.all.payUndoForm.submit();
+    function onPreAuthUndoForm(){
+    	document.all.PreAuthUndoForm.submit();
+    }
+    function onPreAuthFinishForm(){
+    	document.all.PreAuthFinishForm.submit();
+    }
+    function onPreAuthFinishUndoForm(){
+    	document.all.PreAuthFinishUndoForm.submit();
     }
     function onRefundForm(){
     	document.all.refundForm.submit();
@@ -86,50 +92,77 @@ a:hover {
     	document.all.fileTransferForm.submit();
     }
     
-    function displayConsumeDiv(){
-    	document.getElementById("consumeDiv").style.display = "block";
+    function displayPreAuthDiv(){
+    	document.getElementById("preAuthDiv").style.display = "block";
     	document.getElementById("consumeRefundDiv").style.display = "none";
-    	document.getElementById("consumeUndoDiv").style.display = "none";
+    	document.getElementById("proAuthUndoDiv").style.display = "none";
     	document.getElementById("queryDiv").style.display ="none";
     	document.getElementById("fileTransferDiv").style.display = "none";
+    	document.getElementById("preAuthFinishDiv").style.display = "none";
+    	document.getElementById("preAuthFinishUndoDiv").style.display = "none";
     }
     
-    function displayConsumeUndoDiv(){
-    	document.getElementById("consumeUndoDiv").style.display = "block";
-    	document.getElementById("consumeDiv").style.display = "none";
+    function displayProAuthUndoDiv(){
+    	document.getElementById("proAuthUndoDiv").style.display = "block";
+    	document.getElementById("preAuthDiv").style.display = "none";
     	document.getElementById("consumeRefundDiv").style.display = "none";
     	document.getElementById("queryDiv").style.display ="none";
     	document.getElementById("fileTransferDiv").style.display = "none";
+    	document.getElementById("preAuthFinishDiv").style.display = "none";
+    	document.getElementById("preAuthFinishUndoDiv").style.display = "none";
     }
     function displayRefundDiv(){
     	document.getElementById("consumeRefundDiv").style.display = "block";
-    	document.getElementById("consumeDiv").style.display = "none";
-    	document.getElementById("consumeUndoDiv").style.display = "none";
+    	document.getElementById("preAuthDiv").style.display = "none";
+    	document.getElementById("proAuthUndoDiv").style.display = "none";
     	document.getElementById("queryDiv").style.display ="none";
     	document.getElementById("fileTransferDiv").style.display = "none";
+    	document.getElementById("preAuthFinishDiv").style.display = "none";
+    	document.getElementById("preAuthFinishUndoDiv").style.display = "none";
     }
     
     function displayQueryDiv(){
     	document.getElementById("queryDiv").style.display = "block";
     	document.getElementById("consumeRefundDiv").style.display = "none";
-    	document.getElementById("consumeDiv").style.display = "none";
-    	document.getElementById("consumeUndoDiv").style.display = "none";
+    	document.getElementById("preAuthDiv").style.display = "none";
+    	document.getElementById("proAuthUndoDiv").style.display = "none";
     	document.getElementById("fileTransferDiv").style.display = "none";
+    	document.getElementById("preAuthFinishDiv").style.display = "none";
+    	document.getElementById("preAuthFinishUndoDiv").style.display = "none";
     }
     function displayfileTransferDiv(){
-    	
     	document.getElementById("fileTransferDiv").style.display = "block";
     	document.getElementById("queryDiv").style.display = "none";
     	document.getElementById("consumeRefundDiv").style.display = "none";
-    	document.getElementById("consumeDiv").style.display = "none";
-    	document.getElementById("consumeUndoDiv").style.display = "none";
+    	document.getElementById("preAuthDiv").style.display = "none";
+    	document.getElementById("proAuthUndoDiv").style.display = "none";
+    	document.getElementById("preAuthFinishDiv").style.display = "none";
+    	document.getElementById("preAuthFinishUndoDiv").style.display = "none";
+    }
+    function displayProAuthFinishDiv(){
+    	document.getElementById("preAuthFinishDiv").style.display = "block";
+    	document.getElementById("fileTransferDiv").style.display = "none";
+    	document.getElementById("queryDiv").style.display = "none";
+    	document.getElementById("consumeRefundDiv").style.display = "none";
+    	document.getElementById("preAuthDiv").style.display = "none";
+    	document.getElementById("proAuthUndoDiv").style.display = "none";
+    	document.getElementById("preAuthFinishUndoDiv").style.display = "none";
     }
     
+	function displayProAuthFinishUndoDiv(){
+		document.getElementById("preAuthFinishUndoDiv").style.display = "block";
+    	document.getElementById("preAuthFinishDiv").style.display = "none";
+    	document.getElementById("fileTransferDiv").style.display = "none";
+    	document.getElementById("queryDiv").style.display = "none";
+    	document.getElementById("consumeRefundDiv").style.display = "none";
+    	document.getElementById("preAuthDiv").style.display = "none";
+    	document.getElementById("proAuthUndoDiv").style.display = "none";
+    }
 </script>
 
 </head>
 <body>
-<table width="80%" height="40%" id="toptable" align="center"  cellpadding="3" cellspacing="1"  bgcolor="#99CC59;" >
+<table width="80%" height="40%" id="toptable" align="center"  cellpadding="3" cellspacing="1" bgcolor="#99CC59;">
 <tr>
 <td align="left" width="100%" colspan="2" bgcolor="#FFFFEE">
 <span>联调集成前请仔细阅读:</span><a href="<%request.getContextPath();%>/ACPSample_B2C/other/readme.txt" target="_blank">&nbsp;readme.txt</a> 
@@ -141,21 +174,21 @@ a:hover {
 
 <tr>
 <td align="left" width="30%"  bgcolor="#FFFFEE" >
-<h3>全渠道PC网关/WAP支付产品<font color="red" size="6">消费</font>示例</h3>
-<h4>前台跳转消费</h4>
-<ul>
-<li><a href="#" target="_self" onclick="displayConsumeDiv();">跳转网关页面支付</a>&nbsp;&nbsp;点击查看&nbsp;<a href="<%request.getContextPath();%>/ACPSample_B2C/other/consumeFieldSpecal.txt" target="_blank">报文特殊用法.txt</a></li>
-</ul>
-
-<!--
+<h3>全渠道PC网关/WAP支付产品<font color="red" size="6">预授权</font>产品示例</h3>
 <h4>前台跳转预授权</h4>
 <ul>
-<li><a href="<%request.getContextPath();%>/ACPSample_B2C/form_6_7_1_AuthDeal_Front" target="blank">跳转页面预授权</a></li>
+<li><a href="#" onclick="displayPreAuthDiv();">跳转网关页面预授权</a>&nbsp;&nbsp;点击查看&nbsp;<a href="<%request.getContextPath();%>/ACPSample_B2C/other/preauthFieldSepcal.txt" target="_blank">报文特殊用法.txt</a></li>
+
 </ul>
--->
+
 <h4>后续交易（根据商户需求自行选择是否测试）</h4>
 <ul>
-<li><a href="#" onclick="displayConsumeUndoDiv();" target="_self">消费撤销</a></li>
+
+<li><a href="#" onclick="displayProAuthUndoDiv();" target="_self">预授权撤销</a></li>
+</br>
+<li><a href="#" onclick="displayProAuthFinishDiv();" target="_self">预授权完成</a></li>
+</br>
+<li><a href="#" onclick="displayProAuthFinishUndoDiv();" target="_self">预授权完成撤销</a></li>
 </br>
 <li><a href="#"  onclick="displayRefundDiv();" target="_self">退货</a></li>
 </br>
@@ -163,16 +196,19 @@ a:hover {
 </br>
 <li><a href="#"  onclick="displayfileTransferDiv();" target="_self">对账文件下载（文件传输类交易）</a></li>
 </ul>
-</br></br></br></br></br></br></br></br></br></br></br></br>    
+<hr style="height:1px;border:none;border-top:1px dashed #0066CC;" />
+<b>预授权产品交易调用流程</b><br><br>
+预授权->预授权完成->预授权完成撤销->预授权完成->预授权完成撤销...(可以做多次完成，完成撤销)<br><br>
+预授权->预授权撤销
 </td>
 
 <td align="center" valign="top" width="70%" bgcolor="#FFFFEE">
-<div id="consumeDiv" style="display:block">
+<div id="preAuthDiv" style="display:block">
 
-<form action="<%request.getContextPath();%>/ACPSample_B2C/form_6_2_FrontConsume" method="post" name="payForm" id="payForm" target="_blank">
+<form action="<%request.getContextPath();%>/ACPSample_B2C/form_6_7_1_AuthDeal_Front" method="post" name="payForm" id="payForm" target="_blank">
 <table width="100%" height="100%"  border="0" align="left" cellpadding="0" cellspacing="0" bgcolor="#AACC00">
                   
-                  <tr bgcolor="#FFFFEE"><td height="26" align="right" valign="middle"><b>跳转银联页面支付，填写订单信息（只提供了商户号，交易金额，其他字段请具体参考代码）</td></tr>
+                  <tr bgcolor="#FFFFEE"><td width="102" height="26" align="right" valign="middle"><b>跳转银联页面预授权，填写订单信息（只提供了商户号，交易金额，其他字段请具体参考代码）</td></tr>
                   <tr>
                     
                     <td align="center" valign="top" bgcolor="#FFFFEE">
@@ -189,44 +225,108 @@ a:hover {
                       </tr>
 						<tr>
                         <td valign="middle"><b>
-                          <input name="button" type="button" value="跳转银联页面支付" class="btn" onClick="onPayForm();" />
+                          <input name="button" type="button" value="跳转银联预授权" class="btn" onClick="onPayForm();" />
                          </td>
                         <td valign="middle">&nbsp;</td>
                       </tr>
                     </table>
-					<jsp:include  page="/other/consume_faq.jsp"/>
+                    <jsp:include  page="/other/preauth_faq.jsp"/>
                     </td>
-                  </tr>      
+                  </tr>
+                  
+        
               </table>
 </form>
 </div>
 
-<div id="consumeUndoDiv" style="display:none">
-<form action="<%request.getContextPath();%>/ACPSample_B2C/form_6_3_ConsumeUndo" method="post" name="payUndoForm"  id="payUndoForm" target="_blank">
+<div id="proAuthUndoDiv" style="display:none">
+<form action="<%request.getContextPath();%>/ACPSample_B2C/form_6_7_2_AuthUndo" method="post" name="PreAuthUndoForm"  id="PreAuthUndoForm" target="_blank">
 <table width="100%" border="0" align="left" cellpadding="0" cellspacing="0" bgcolor="#FFCC00">
-                  <tr bgcolor="#FFFFEE"><td width="102" height="26" align="right" valign="middle"><b>填写消费撤销交易关键要素</td></tr>
+                  <tr bgcolor="#FFFFEE"><td width="102" height="26" align="right" valign="middle"><b>填写预授权撤销交易关键要素</td></tr>
                   <tr>
-                    <td align="center" valign="top"  bgcolor="#FFFFEE">
+                    <td align="center" valign="top" bgcolor="#FFFFEE">
                     <table width="100%" height="100%"  border="0" cellpadding="3" cellspacing="0"  class="px14">
                         <tr>
-                        <td align="right" valign="middle">原消费交易的queryId：</td>
-                        <td valign="middle"><input name="origQryId" value="">（从原交易的后台通知报文或者交易状态查询返回的queryId中获取）</td>
+                        <td align="right" valign="middle">原预授权交易的queryId：</td>
+                        <td valign="middle"><input name="origQryId" value="">（从预授权交易的后台通知报文或者交易状态查询返回的queryId中获取）</td>
                         </tr>
                         <tr>
                         <td align="right" valign="middle">撤销金额txnAmt：</td>
-                        <td valign="middle"><input type="text" name="txnAmt" value="10000">分（必须与原消费金额相同）</td>
+                        <td valign="middle"><input type="text" name="txnAmt" value="10000">分（必须与原预授权交易金额相同）</td>
                         </tr>
                         <tr>
                         <td valign="top" height="26">
-                          <input name="button" type="button" value="消费撤销" class="btn" onClick="onPayUndoForm();" />
+                          <input name="button" type="button" value="预授权撤销" class="btn" onClick="onPreAuthUndoForm();" />
                         </td>
                         <td valign="top">&nbsp;</td>
                       </tr>
                     </table>
-                     <jsp:include  page="/other/consumeUndo_faq.jsp"/>
+                      <jsp:include  page="/other/preauthUndo_faq.jsp"/>
                     </td>
                   </tr>
-                  
+                 
+ </table>
+</form>
+</div>
+
+
+<div id="preAuthFinishDiv" style="display:none">
+<form action="<%request.getContextPath();%>/ACPSample_B2C/form_6_7_3_AuthFinish" method="post" name="PreAuthFinishForm"  id="PreAuthFinishForm" target="_blank">
+<table width="100%" border="0" align="left" cellpadding="0" cellspacing="0" bgcolor="#FFCC00">
+                  <tr bgcolor="#FFFFEE"><td width="102" height="26" align="right" valign="middle"><b>填写预授权完成交易关键要素</td></tr>
+                  <tr>
+                    <td align="center" valign="top"  bgcolor="#FFFFEE">
+                    <table width="100%" height="100%"  border="0" cellpadding="3" cellspacing="0"  class="px14">
+                        <tr>
+                        <td align="right" valign="middle">原预授权交易的queryId：</td>
+                        <td valign="middle"><input name="origQryId" value="">（从预授权交易的后台通知报文或者交易状态查询返回的queryId中获取）</td>
+                        </tr>
+                        <tr>
+                        <td align="right" valign="middle">完成金额txnAmt：</td>
+                        <td valign="middle"><input type="text" name="txnAmt" value="10000">分（金额范围为预授权金额的0-115%）</td>
+                        </tr>
+                        <tr>
+                        <td valign="top" height="26">
+                          <input name="button" type="button" value="预授权完成" class="btn" onClick="onPreAuthFinishForm();" />
+                        </td>
+                        <td valign="top">&nbsp;</td>
+                      </tr>
+                    </table>
+                      <jsp:include  page="/other/preauthFinish_faq.jsp"/>
+                    </td>
+                  </tr>
+                 
+ </table>
+</form>
+</div>
+
+
+<div id="preAuthFinishUndoDiv" style="display:none">
+<form action="<%request.getContextPath();%>/ACPSample_B2C/form_6_7_4_AutnFinishUndo" method="post" name="PreAuthFinishUndoForm"  id="PreAuthFinishUndoForm" target="_blank">
+<table width="100%" border="0" align="left" cellpadding="0" cellspacing="0" bgcolor="#FFCC00">
+                  <tr bgcolor="#FFFFEE"><td width="102" height="26" align="right" valign="middle"><b>填写预授权完成撤销交易关键要素</td></tr>
+                  <tr>
+                    <td align="center" valign="top" bgcolor="#FFFFEE">
+                    <table width="100%" height="100%"  border="0" cellpadding="3" cellspacing="0"  class="px14">
+                        <tr>
+                        <td align="right" valign="middle">原预授权完成交易的queryId：</td>
+                        <td valign="middle"><input name="origQryId" value="">（从预授权完成交易的后台通知报文或者交易状态查询返回的queryId中获取）</td>
+                        </tr>
+                        <tr>
+                        <td align="right" valign="middle">完成撤销金额txnAmt：</td>
+                        <td valign="middle"><input type="text" name="txnAmt" value="10000">分（必须与原预授权完成交易金额相同）</td>
+                        </tr>
+                        <tr>
+                        <td valign="top" height="26">
+                          <input name="button" type="button" value="预授权完成撤销" class="btn" onClick="onPreAuthFinishUndoForm();" />
+                        </td>
+                        <td valign="top">&nbsp;</td>
+                      </tr>
+                    </table>
+                    <jsp:include  page="/other/preauthFinishUndo_faq.jsp"/>
+                    </td>
+                  </tr>
+                   
  </table>
 </form>
 </div>
@@ -240,7 +340,7 @@ a:hover {
                     <table width="100%" height="100%"  border="0" cellpadding="3" cellspacing="0"  class="px14">
                         <tr>
                         <td align="right" valign="middle" >原消费交易的queryId：</td>
-                        <td valign="middle" ><input name="origQryId" value="">（从原交易的后台通知报文或者交易状态查询返回的queryId中获取）</td>
+                        <td valign="middle" ><input name="origQryId" value="">（从原预授权完成的后台通知报文或者交易状态查询返回的queryId中获取）</td>
                         </tr>
                         <tr>
                         <td align="right" valign="middle">退货金额txnAmt：</td>
@@ -253,10 +353,10 @@ a:hover {
                         <td valign="top">&nbsp;</td>
                       </tr>
                     </table>
-                    <jsp:include  page="/other/refund_faq.jsp"/>
+                      <jsp:include  page="/other/refund_faq.jsp"/>
                     </td>
                   </tr>
-                   
+                 
  </table>
 </form>
 </div>
@@ -267,7 +367,7 @@ a:hover {
 <table width="100%" border="0" align="left" cellpadding="0" cellspacing="0" bgcolor="#FFCC00">
                   <tr bgcolor="#FFFFEE"><td width="102" height="26" align="right" valign="middle"><b>填写交易状态查询关键要素</td></tr>
                   <tr>
-                    <td align="center" valign="top"  bgcolor="#FFFFEE">
+                    <td align="center" valign="top" bgcolor="#FFFFEE">
                     <table width="100%" height="100%"  border="0" cellpadding="3" cellspacing="0"  class="px14">
                         <tr>
                         <td align="right" valign="middle" >被查询交易的orderId：</td>
@@ -287,6 +387,7 @@ a:hover {
                      <jsp:include  page="/other/query_faq.jsp"/>
                     </td>
                   </tr>
+                  
  </table>
 </form>
 </div>
@@ -294,7 +395,7 @@ a:hover {
 <div id="fileTransferDiv" style="display:none">
 <form action="<%request.getContextPath();%>/ACPSample_B2C/form_6_6_FileTransfer" method="post" name="fileTransferForm"  id="fileTransferForm" target="_blank">
 <table width="100%" border="0" align="left" cellpadding="0" cellspacing="0" bgcolor="#FFCC00">
-                  <tr bgcolor="#FFCC00"><td width="102" height="26" align="right" valign="middle"><b>填写对账文件下载关键要素</td></tr>
+                  <tr bgcolor="#FFFFEE"><td width="102" height="26" align="right" valign="middle"><b>填写对账文件下载关键要素</td></tr>
                   <tr>
                     <td align="center" valign="top"  bgcolor="#FFFFEE">
                     <table width="100%" height="100%"  border="0" cellpadding="3" cellspacing="0"  class="px14">

@@ -29,8 +29,8 @@ public class RestTest
 	@RequestMapping("/a")
 	Announce home() {
 		Announce a = new Announce();
-		a.setContent("c");
-		a.setTitle("title");
+		a.setContentTaT("c");
+		a.setTitleTaT("title");
 		return a;
 	}
 	
@@ -39,9 +39,6 @@ public class RestTest
 		String s = "";
 			try {
 				s = ALIPayManager.getInstance().doPost();
-				httpResponse.setContentType("text/html;charset=utf-8");
-				httpResponse.getWriter().write(s);// 直接将完整的表单html输出到页面
-				httpResponse.getWriter().flush();
 			} catch (ServletException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -49,7 +46,7 @@ public class RestTest
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-		return "";
+		return s;
 	}
 	
 	@RequestMapping( value = "/form", method = { RequestMethod.GET, RequestMethod.POST } )

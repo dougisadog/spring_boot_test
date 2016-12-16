@@ -5,41 +5,45 @@ import java.text.SimpleDateFormat;
 
 public class Announce {
 
-    private String title;
-    private String content;
-    private String dateline;
+    private String titleTaT;
+    private String contentTaT;
+    private String datelineTaT;
 
 
-    public String getTitle() {
-        return title;
-    }
+    public String getTitleTaT() {
+		return titleTaT;
+	}
 
-    public void setTitle(String title) {
-        this.title = title;
-    }
 
-    public String getContent() {
-        return content;
-    }
+	public void setTitleTaT(String titleTaT) {
+		this.titleTaT = titleTaT;
+	}
 
-    public void setContent(String content) {
-        this.content = content;
-    }
 
-    public String getDateline() {
-        return dateline;
-    }
+	public String getContentTaT() {
+		return contentTaT;
+	}
 
-    public void setDateline(long dateline) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        String sd = sdf.format(new Date(dateline * 1000));
-        this.dateline = sd;
-    }
 
-    @Override
+	public void setContentTaT(String contentTaT) {
+		this.contentTaT = contentTaT;
+	}
+
+
+	public String getDatelineTaT() {
+		return datelineTaT;
+	}
+
+
+	public void setDatelineTaT(String datelineTaT) {
+		this.datelineTaT = datelineTaT;
+	}
+
+
+	@Override
     public String toString() {
-        return "Announce [title=" + title + ", content=" + content
-                + ", dateline=" + dateline + "]";
+        return "Announce [title=" + titleTaT + ", content=" + contentTaT
+                + ", dateline=" + datelineTaT + "]";
     }
 
 }

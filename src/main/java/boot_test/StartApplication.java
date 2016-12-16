@@ -22,11 +22,20 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.embedded.ConfigurableEmbeddedServletContainer;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizer;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.support.SpringBootServletInitializer;
+import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
+import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
 
+import acp.sdk.SDKConfig;
+
+
+//使用.yml时，属性名的值和冒号中间必须有空格，如name: Isea533正确，name:Isea533就是错的。
 @SpringBootApplication
-//@EnableAutoConfiguration
+@ConfigurationProperties
+//@EnableEurekaClient
+//@EnableDiscoveryClient
 @EnableConfigurationProperties
 public class StartApplication extends SpringBootServletInitializer implements EmbeddedServletContainerCustomizer{
 
@@ -37,6 +46,7 @@ public class StartApplication extends SpringBootServletInitializer implements Em
 
 	public static void main(String[] args) throws Exception {
 		SpringApplication.run(StartApplication.class, args);
+		SDKConfig.getConfig().loadPropertiesFromSrc();
 	}
 
 	@Override
