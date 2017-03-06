@@ -1,10 +1,5 @@
 package push;
 
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
-
-import org.apache.commons.codec.digest.DigestUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -29,13 +24,8 @@ public class Demo {
 	public Demo (){
 	}
 	public Demo(String key, String secret) {
-		try {
 			appkey = key;
 			appMasterSecret = secret;
-		} catch (Exception e) {
-			e.printStackTrace();
-			System.exit(1);
-		}
 	}
 	
 	public void sendAndroidBroadcast() throws Exception {

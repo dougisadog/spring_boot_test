@@ -62,7 +62,7 @@ public class StartApplication extends SpringBootServletInitializer implements Em
 
 	@Override
 	public void customize(ConfigurableEmbeddedServletContainer container) {
-		container.setPort(9973);
+		container.setPort(80);
 	}
 
 }
