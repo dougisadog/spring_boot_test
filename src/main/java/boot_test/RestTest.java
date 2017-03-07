@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
@@ -107,19 +108,20 @@ public class RestTest {
 		if (message instanceof RecvTextMessage) {
 			String content = ((RecvTextMessage)message).getContent();
 			System.out.println(content);
-			result = wechat.msg().respText(message, content);
+//			result = wechat.msg().respText(message, content);
+			result = WechatHaoHelper.getInstance().replyXmlText(message, content);
 		}
 		//点击菜单的事件推送
 		else if (message instanceof RecvMenuEvent) {
 			String type = ((RecvMenuEvent)message).getEventType();
-			result = wechat.msg().respText(message, type);
-			result = wechat.msg().respNews(message,
-                    Arrays.asList(
-                            new Article("图文标题1", "图文描述", "http://mpic.tiankong.com/c5f/9d6/c5f9d67fbfd7e5deb25e297aa2da00a5/east-A21-559966.jpg@360h", "链接"),
-                            new Article("图文标题2", "图文描述", "图片链接", "https://www.baidu.com/"),
-                            new Article("图文标题3", "图文描述", "图片链接", "链接"),
-                            new Article("图文标题4", "图文描述", "图片链接", "链接")
-                    ));
+			List<Article> articles = Arrays.asList(
+                    new Article("图文标题1", "图文描述", "http://mpic.tiankong.com/c5f/9d6/c5f9d67fbfd7e5deb25e297aa2da00a5/east-A21-559966.jpg@360h", "链接"),
+                    new Article("图文标题2", "图文描述", "图片链接", "https://www.baidu.com/"),
+                    new Article("图文标题3", "图文描述", "图片链接", "链接"),
+                    new Article("图文标题4", "图文描述", "图片链接", "链接")
+            );
+//			result = wechat.msg().respNews(message,articles);
+			result = WechatHaoHelper.getInstance().replyXmlArticles(message, articles);
 		}
 		return result;
 	}
@@ -133,7 +135,8 @@ public class RestTest {
 //	                " <Content><![CDATA[this is a test]]></Content>\n" +
 //	                " <MsgId>1234567890123456</MsgId>\n" +
 //	                " </xml>";
-	        RecvMessage message = wechat.msg().receive(xml);
+//	        RecvMessage message = wechat.msg().receive(xml);
+	    	RecvMessage message = WechatHaoHelper.getInstance().parseMessageXml(xml);
 	        return resultXml(message, message instanceof RecvMsg && message instanceof RecvTextMessage);
 	        //	        xml = "<xml>\n" +
 //	                " <ToUserName><![CDATA[toUser]]></ToUserName>\n" +

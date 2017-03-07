@@ -43,20 +43,21 @@ public class RestWeixinBack {
 			System.out.println("key = " + entry.getKey() + "&value = " + entry.getValue()[0]);
 			
 		}
-		wechat.menu().create(getBuildMenu(), new Callback<Boolean>() {
-			
-			@Override
-			public void onSuccess(Boolean t) {
-				// TODO Auto-generated method stub
-				
-			}
-			
-			@Override
-			public void onFailure(Exception e) {
-				// TODO Auto-generated method stub
-				
-			}
-		});
+//		wechat.menu().create(getBuildMenu(), new Callback<Boolean>() {
+//			
+//			@Override
+//			public void onSuccess(Boolean t) {
+//				// TODO Auto-generated method stub
+//				
+//			}
+//			
+//			@Override
+//			public void onFailure(Exception e) {
+//				// TODO Auto-generated method stub
+//				
+//			}
+//		});
+		WechatHaoHelper.getInstance().createMenu(null, null);
 		return "success";
 
 	}
@@ -71,20 +72,21 @@ public class RestWeixinBack {
 			System.out.println("key = " + entry.getKey() + "&value = " + entry.getValue()[0]);
 			
 		}
-		wechat.menu().delete(new Callback<Boolean>() {
-			
-			@Override
-			public void onSuccess(Boolean t) {
-				// TODO Auto-generated method stub
-				
-			}
-			
-			@Override
-			public void onFailure(Exception e) {
-				// TODO Auto-generated method stub
-				
-			}
-		});
+		WechatHaoHelper.getInstance().deleteMenu(null);
+//		wechat.menu().delete(new Callback<Boolean>() {
+//			
+//			@Override
+//			public void onSuccess(Boolean t) {
+//				// TODO Auto-generated method stub
+//				
+//			}
+//			
+//			@Override
+//			public void onFailure(Exception e) {
+//				// TODO Auto-generated method stub
+//				
+//			}
+//		});
 		return "success";
 
 	}

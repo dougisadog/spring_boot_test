@@ -13,4 +13,5 @@ public class WXPayManager {
 		return wXPayManager;
 	}
 
+
 }
