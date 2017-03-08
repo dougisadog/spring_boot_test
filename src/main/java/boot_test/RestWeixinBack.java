@@ -2,6 +2,8 @@ package boot_test;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import javax.servlet.ServletInputStream;
@@ -16,6 +18,7 @@ import me.hao0.wechat.core.MenuBuilder;
 import me.hao0.wechat.core.Wechat;
 import me.hao0.wechat.core.WechatBuilder;
 import me.hao0.wechat.model.menu.Menu;
+import me.hao0.wechat.model.message.send.TemplateField;
 
 /**
  * Rest 返回對象的json
@@ -25,19 +28,32 @@ import me.hao0.wechat.model.menu.Menu;
 @RequestMapping("/weiixinback")
 public class RestWeixinBack {
 	
-    private Wechat wechat;
+	@RequestMapping(value = "/sendtemplate", method = {RequestMethod.GET,
+			RequestMethod.POST})
+	public String sendtemplate(HttpServletRequest httpRequest,
+			HttpServletResponse httpResponse) {
+		List<TemplateField> fields = Arrays.asList(
+                new TemplateField("params1", "下单成功"),
+                new TemplateField("params2", "感谢您的使用。"),
+                new TemplateField("keyword1", "TD113123123"),
+                new TemplateField("keyword2", "2015-11-11 11:11:11"),
+                new TemplateField("keyword3", "123456")
+            );
+		WechatHaoHelper.getInstance().replyXmlTemplate("oMvjavwH3x2wbkq5xdfw3lQsksCU", "8F4qB2m7Xra5tinmmf3L_gGGubaZKM5-tEx3fzdPR7k", fields, "https://www.baidu.com/");
+		
+		Map<String, String[]> m = httpRequest.getParameterMap();
+		for (Entry<String, String[]> entry : m.entrySet()) {
+			System.out.println("key = " + entry.getKey() + "&value = " + entry.getValue()[0]);
+			
+		}
+		return "success";
 
-    public void init() {
-    	if (null == wechat)
-        wechat = WechatBuilder.newBuilder("wx39bb940a2cc30c6b", "03ff7c0fedfa63c6d54294e08b6333b6")
-                .build();
-    }
-	
+	}
+    
 	@RequestMapping(value = "/menu", method = {RequestMethod.GET,
 			RequestMethod.POST})
 	public String createWeixinMenu(HttpServletRequest httpRequest,
 			HttpServletResponse httpResponse) {
-		init();
 		Map<String, String[]> m = httpRequest.getParameterMap();
 		for (Entry<String, String[]> entry : m.entrySet()) {
 			System.out.println("key = " + entry.getKey() + "&value = " + entry.getValue()[0]);
@@ -57,7 +73,20 @@ public class RestWeixinBack {
 //				
 //			}
 //		});
-		WechatHaoHelper.getInstance().createMenu(null, null);
+		WechatHaoHelper.getInstance().createMenu(null, new Callback<Boolean>() {
+			
+			@Override
+			public void onSuccess(Boolean t) {
+				System.out.println("create success");
+				
+			}
+			
+			@Override
+			public void onFailure(Exception e) {
+				System.out.println("create fail");
+				
+			}
+		});
 		return "success";
 
 	}
@@ -66,7 +95,6 @@ public class RestWeixinBack {
 			RequestMethod.POST})
 	public String deleteWeixinMenu(HttpServletRequest httpRequest,
 			HttpServletResponse httpResponse) {
-		init();
 		Map<String, String[]> m = httpRequest.getParameterMap();
 		for (Entry<String, String[]> entry : m.entrySet()) {
 			System.out.println("key = " + entry.getKey() + "&value = " + entry.getValue()[0]);

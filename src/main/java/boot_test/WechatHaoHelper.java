@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
+
 import entity.MenuItem;
 import me.hao0.wechat.core.Callback;
 import me.hao0.wechat.core.MenuBuilder;
@@ -14,6 +16,7 @@ import me.hao0.wechat.model.message.receive.RecvMessage;
 import me.hao0.wechat.model.message.receive.event.RecvMenuEvent;
 import me.hao0.wechat.model.message.receive.msg.RecvTextMessage;
 import me.hao0.wechat.model.message.resp.Article;
+import me.hao0.wechat.model.message.send.TemplateField;
 
 public class WechatHaoHelper {
 
@@ -40,6 +43,22 @@ public class WechatHaoHelper {
 		return message;
 	}
 	
+	public String replyXmlTemplate(String openId, String templateId, List<TemplateField> fields) {
+		Long msgId = wechat.msg().sendTemplate(openId, templateId, fields);
+		return msgId + "";
+	}
+	
+	public String replyXmlTemplate(String openId, String templateId, List<TemplateField> fields, String link) {
+		Long msgId = wechat.msg().sendTemplate(openId, templateId, fields, link);
+		return msgId + "";
+	}
+	
+	/**
+	 * 回复文字
+	 * @param message 请求方信息
+	 * @param content 回复内容
+	 * @return
+	 */
 	public String replyXmlText(RecvMessage message, String content) {
 		String result = null;
 		//对话的时间推送 此处仅为文字 更多扩展见RecvMsg
@@ -51,11 +70,16 @@ public class WechatHaoHelper {
 		return result;
 	}
 	
+	/**
+	 * 回复图文
+	 * @param message 请求方信息
+	 * @param articles 图文内容
+	 * @return
+	 */
 	public String replyXmlArticles(RecvMessage message, List<Article> articles) {
 		String result = null;
 		//对话的时间推送 此处仅为文字 更多扩展见RecvMsg
 		if (message instanceof RecvMenuEvent) {
-			String type = ((RecvMenuEvent)message).getEventType();
 			//TODO DELETE
 			if (null == articles || articles.size() == 0) {
 				articles = Arrays.asList(
@@ -107,6 +131,11 @@ public class WechatHaoHelper {
 		return null == menuItems || menuItems.size() == 0;
 	}
 	
+	/**
+	 * 构建菜单json
+	 * @param menuItems
+	 * @return
+	 */
 	private String getBuildMenu(List<MenuItem> menuItems) {
 		if (checkMenuItems(menuItems)) {
 			//return null;
@@ -117,7 +146,8 @@ public class WechatHaoHelper {
 			MenuItem m2 = new MenuItem("优惠活动", "ACTIVITIES", MenuItem.CLICK);
 			MenuItem m3 = new MenuItem("更多", "", MenuItem.PARENT);
 			m3.setMenuItems(Arrays.asList(
-					new MenuItem("关于我们", "ACTIVITIES", MenuItem.CLICK),
+					new MenuItem("关于我们", "ACT", MenuItem.CLICK),
+					new MenuItem("模板推送", "TEMPLATE", MenuItem.CLICK),
 					new MenuItem("我的订单", "http://www.baidu.com", MenuItem.VIEW)));
 			menuItems.add(m1);
 			menuItems.add(m2);

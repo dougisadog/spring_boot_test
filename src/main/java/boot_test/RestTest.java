@@ -25,6 +25,7 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 import entity.Announce;
 import me.hao0.wechat.core.Wechat;
 import me.hao0.wechat.core.WechatBuilder;
+import me.hao0.wechat.exception.EventException;
 import me.hao0.wechat.model.message.receive.RecvMessage;
 import me.hao0.wechat.model.message.receive.event.RecvEvent;
 import me.hao0.wechat.model.message.receive.event.RecvLocationEvent;
@@ -52,14 +53,6 @@ import util.HttpReqest;
 @RequestMapping("/rest")
 public class RestTest {
 	
-    private Wechat wechat;
-
-    public void init() {
-    	if (null == wechat)
-        wechat = WechatBuilder.newBuilder("wx39bb940a2cc30c6b", "03ff7c0fedfa63c6d54294e08b6333b6")
-                .build();
-    }
-    
     private String getXml(HttpServletRequest httpRequest) {
         ServletInputStream in;
         StringBuilder xmlMsg = new StringBuilder();  
@@ -81,18 +74,29 @@ public class RestTest {
 			RequestMethod.POST})
 	public String getWeixin(HttpServletRequest httpRequest,
 			HttpServletResponse httpResponse) {
-		init();
 		Map<String, String[]> m = httpRequest.getParameterMap();
 		for (Entry<String, String[]> entry : m.entrySet()) {
 			System.out.println("key = " + entry.getKey() + "&value = " + entry.getValue()[0]);
 			
 		}
 		String result = "";
+		//更换 地址的验证
 		if (m.containsKey("echostr")) {
 			result = m.get("echostr")[0];
 		}
+		//处理微信的推送消息
 		else {
-			result = testMessageReceive(getXml(httpRequest));
+			try {
+				result = testMessageReceive(getXml(httpRequest));
+			} catch (Exception e) {
+				if (e instanceof EventException) {
+					//模板推送的过滤处理
+					System.out.println("未知类型");
+				}
+				else {
+					e.printStackTrace();
+				}
+			}
 		}
 		return result;
 
@@ -113,14 +117,23 @@ public class RestTest {
 		}
 		//点击菜单的事件推送
 		else if (message instanceof RecvMenuEvent) {
-			String type = ((RecvMenuEvent)message).getEventType();
+			RecvMenuEvent event = ((RecvMenuEvent)message);
+			String type = event.getEventType();
+			if ("TEMPLATE".equals(event.getEventKey())){
+				WechatHaoHelper.getInstance().replyXmlTemplate(
+						message.getFromUserName(),
+						"8F4qB2m7Xra5tinmmf3L_gGGubaZKM5-tEx3fzdPR7k", null, "https://www.baidu.com/");
+				return "";
+			}
 			List<Article> articles = Arrays.asList(
-                    new Article("图文标题1", "图文描述", "http://mpic.tiankong.com/c5f/9d6/c5f9d67fbfd7e5deb25e297aa2da00a5/east-A21-559966.jpg@360h", "链接"),
-                    new Article("图文标题2", "图文描述", "图片链接", "https://www.baidu.com/"),
-                    new Article("图文标题3", "图文描述", "图片链接", "链接"),
-                    new Article("图文标题4", "图文描述", "图片链接", "链接")
-            );
-//			result = wechat.msg().respNews(message,articles);
+					new Article("图文标题1", "图文描述",
+							"http://mpic.tiankong.com/c5f/9d6/c5f9d67fbfd7e5deb25e297aa2da00a5/east-A21-559966.jpg@360h",
+							"链接"),
+					new Article("图文标题2", "图文描述", "图片链接",
+							"https://www.baidu.com/"),
+					new Article("图文标题3", "图文描述", "图片链接", "链接"),
+					new Article("图文标题4", "图文描述", "图片链接", "链接"));
+			// result = wechat.msg().respNews(message,articles);
 			result = WechatHaoHelper.getInstance().replyXmlArticles(message, articles);
 		}
 		return result;
@@ -285,7 +298,7 @@ public class RestTest {
 	@RequestMapping("/a/{code}")
 	Announce home(@PathVariable("code") String code) {
 		Announce a = new Announce();
-		Map<String, String> postParams = new HashMap<>();
+		Map<String, String> postParams = new HashMap<String, String>();
 		postParams.put("appkey", "1a80080bb01d6");
 		postParams.put("phone", "18341134983");
 		postParams.put("zone", "86");
@@ -307,7 +320,7 @@ public class RestTest {
 	@RequestMapping("/wexin/test")
 	Announce aaa(@PathVariable("code") String code) {
 		Announce a = new Announce();
-		Map<String, String> postParams = new HashMap<>();
+		Map<String, String> postParams = new HashMap<String, String>();
 		postParams.put("appkey", "wx39bb940a2cc30c6b");
 		postParams.put("phone", "03ff7c0fedfa63c6d54294e08b6333b6");
 		postParams.put("zone", "86");
