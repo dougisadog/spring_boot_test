@@ -24,8 +24,14 @@ public class WechatHaoHelper {
 
 	private static WechatHaoHelper wechatHaoHelper;
 	
+	/**
+	 * wechahao的组件
+	 */
     private Wechat wechat;
     
+    /**
+     * 加密用组件
+     */
     private WXBizMsgCrypt pc;
     
 //    private final static String APP_ID = "wx39bb940a2cc30c6b";
@@ -40,7 +46,10 @@ public class WechatHaoHelper {
     
     private final static String APP_TOKEN = "dougisadog";
     
-    private boolean NEED_TOKEN = true;
+    /**
+     * 当前是否开启加密
+     */
+    private final static boolean NEED_TOKEN = true;
     
     /**
      * appid appsecret可修改为 文件props读取
@@ -48,15 +57,25 @@ public class WechatHaoHelper {
 	private WechatHaoHelper() {
 		wechat = WechatBuilder.newBuilder(APP_ID, APP_SECRET).msgKey(APP_MSG_KEY)
                 .build();
-		try {
-			pc = new WXBizMsgCrypt(APP_TOKEN, APP_MSG_KEY, APP_ID);
-		} catch (AesException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		if (NEED_TOKEN) {
+			try {
+				pc = new WXBizMsgCrypt(APP_TOKEN, APP_MSG_KEY, APP_ID);
+			} catch (AesException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		
 	};
 	
+	/**
+	 * 构建加密信息
+	 * @param orginXml 原始未加密xml
+	 * @param timeStamp 时间戳，可以自己生成，也可以用URL参数的timestamp
+	 * @param nonce 随机串，可以自己生成，也可以用URL参数的nonce
+	 * @return 已加密结果
+	 * @throws Exception
+	 */
 	public String encodeXml(String orginXml, String timestamp, String nonce) throws Exception {
 		if (!NEED_TOKEN) return orginXml;
 		String mingwen = pc.encryptMsg(orginXml, timestamp, nonce);
@@ -64,6 +83,15 @@ public class WechatHaoHelper {
 		return mingwen;
 	}
 	
+	/**
+	 * 解密微信推送的加密内容
+	 * @param orginXml  第三方收到公众号平台发送的消息
+	 * @param msgSignature url传递的加密签名key
+	 * @param timeStamp 时间戳，可以自己生成，也可以用URL参数的timestamp
+	 * @param nonce 随机串，可以自己生成，也可以用URL参数的nonce
+	 * @return 解密内容xml
+	 * @throws Exception
+	 */
 	public String decodeXml(String orginXml, String msgSignature, String timestamp, String nonce) throws Exception {
 		if (!NEED_TOKEN) return orginXml;
 
@@ -79,25 +107,54 @@ public class WechatHaoHelper {
 		return wechatHaoHelper;
 	}
 	
+	/**
+	 * 处理文字消息
+	 * @param xml
+	 * @return
+	 */
 	public RecvMessage parseMessageXml(String xml) {
 		RecvMessage message = wechat.msg().receive(xml);
 		return message;
 	}
 	
+	/**
+	 * 返回模板消息
+	 * @param openId 接收方openid
+	 * @param templateId 模板id
+	 * @param fields 模板参数
+	 * @return
+	 */
 	public String replyXmlTemplate(String openId, String templateId, List<TemplateField> fields) {
 		Long msgId = wechat.msg().sendTemplate(openId, templateId, fields);
 		return msgId + "";
 	}
 	
+	/**
+	 * 返回模板消息
+	 * @param openId 接收方openid
+	 * @param templateId 模板id
+	 * @param fields 模板参数
+	 * @param link 模板跳转地址
+	 * @return
+	 */
 	public String replyXmlTemplate(String openId, String templateId, List<TemplateField> fields, String link) {
 		Long msgId = wechat.msg().sendTemplate(openId, templateId, fields, link);
 		return msgId + "";
 	}
 	
+	/**
+	 * 返回用户详情(其中包含UnionId)
+	 * @param openId
+	 * @return
+	 */
 	public User getUserDetail(String openId) {
 		 return wechat.user().getUser(openId);
 	}
 	
+	/**
+	 * 返回关注的用户列表（只包含openid）
+	 * @return
+	 */
 	public UserList getUsers() {
 		 return wechat.user().getUsers(null);
 	}
