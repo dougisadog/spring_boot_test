@@ -1,18 +1,18 @@
 package boot_test;
 
 import java.io.File;
-import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Properties;
-
-import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.wicket.ajax.json.JSONException;
 import org.apache.wicket.ajax.json.JSONObject;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,24 +23,12 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import entity.Announce;
-import me.hao0.wechat.core.Wechat;
-import me.hao0.wechat.core.WechatBuilder;
 import me.hao0.wechat.exception.EventException;
 import me.hao0.wechat.model.message.receive.RecvMessage;
-import me.hao0.wechat.model.message.receive.event.RecvEvent;
-import me.hao0.wechat.model.message.receive.event.RecvLocationEvent;
 import me.hao0.wechat.model.message.receive.event.RecvMenuEvent;
-import me.hao0.wechat.model.message.receive.event.RecvScanEvent;
-import me.hao0.wechat.model.message.receive.event.RecvSubscribeEvent;
-import me.hao0.wechat.model.message.receive.msg.RecvImageMessage;
-import me.hao0.wechat.model.message.receive.msg.RecvLinkMessage;
-import me.hao0.wechat.model.message.receive.msg.RecvLocationMessage;
-import me.hao0.wechat.model.message.receive.msg.RecvMsg;
-import me.hao0.wechat.model.message.receive.msg.RecvShortVideoMessage;
 import me.hao0.wechat.model.message.receive.msg.RecvTextMessage;
-import me.hao0.wechat.model.message.receive.msg.RecvVideoMessage;
-import me.hao0.wechat.model.message.receive.msg.RecvVoiceMessage;
 import me.hao0.wechat.model.message.resp.Article;
+import me.hao0.wechat.model.message.send.TemplateField;
 import me.hao0.wechat.model.user.User;
 import me.hao0.wechat.model.user.UserList;
 import push.Demo;
@@ -64,14 +52,14 @@ public class RestTest {
 		WechatBase wechatBase = new WechatBase(httpRequest);
 		String result = "";
 		//更换 地址的验证
-		if (m.containsKey("echostr")) {
-			result = m.get("echostr")[0];
+		if (!StringUtils.isEmpty(wechatBase.getEchostr())) {
+			result = wechatBase.getEchostr();
 		}
 		//处理微信的推送消息
 		else {
 			try {
 				String content = wechatBase.getContent();
-				if (m.containsKey("msg_signature")) {
+				if (!StringUtils.isEmpty(wechatBase.getMsg_signature())) {
 					String msg_signature = wechatBase.getMsg_signature();
 					String timestamp =wechatBase.getTimestamp();
 					String nonce = wechatBase.getNonce();
@@ -118,9 +106,22 @@ public class RestTest {
 			RecvMenuEvent event = ((RecvMenuEvent)message);
 			String type = event.getEventType();
 			if ("TEMPLATE".equals(event.getEventKey())){
+				String templateId = "p_lDlEJK9YgJW7oSaCi5MeSa6FmCErK8vAq_eczs2-M";
+				User user = WechatHaoHelper.getInstance().getUserDetail(event.getFromUserName());
+				SimpleDateFormat format = new SimpleDateFormat(
+						"yyyy-MM-dd hh:mm");
+				String date = format.format(new Date());
+				String remark = "请在预约时间前来我司咨询，如果成功签约，预约金将全额退回。如在预约当天未到场咨询，预约金将不予退回。";
+				List<TemplateField> fields = Arrays.asList(
+		                new TemplateField("keyword1", user.getNickName()),
+		                new TemplateField("keyword2", "面部护理"),
+		                new TemplateField("keyword3", "100元"),
+		                new TemplateField("keyword4", date),
+		                new TemplateField("remark", remark)
+		            );
 				WechatHaoHelper.getInstance().replyXmlTemplate(
 						message.getFromUserName(),
-						"8F4qB2m7Xra5tinmmf3L_gGGubaZKM5-tEx3fzdPR7k", null, "https://www.baidu.com/");
+						templateId, fields, "https://www.baidu.com/");
 				return "";
 			}
 			List<Article> articles = Arrays.asList(
