@@ -41,9 +41,13 @@ import me.hao0.wechat.model.message.receive.msg.RecvTextMessage;
 import me.hao0.wechat.model.message.receive.msg.RecvVideoMessage;
 import me.hao0.wechat.model.message.receive.msg.RecvVoiceMessage;
 import me.hao0.wechat.model.message.resp.Article;
+import me.hao0.wechat.model.user.User;
+import me.hao0.wechat.model.user.UserList;
 import push.Demo;
 import push.ali.AndroidPushManager;
 import util.HttpReqest;
+import util.wechatHelper.WechatBase;
+import util.wechatHelper.WechatHaoHelper;
 
 /**
  * Rest 返回對象的json
@@ -53,32 +57,11 @@ import util.HttpReqest;
 @RequestMapping("/rest")
 public class RestTest {
 	
-    private String getXml(HttpServletRequest httpRequest) {
-        ServletInputStream in;
-        StringBuilder xmlMsg = new StringBuilder();  
-		try {
-			in = httpRequest.getInputStream();
-		        byte[] b = new byte[4096];  
-		        for (int n; (n = in.read(b)) != -1;) {  
-		            xmlMsg.append(new String(b, 0, n, "UTF-8"));  
-		        }
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}  
-       
-		return xmlMsg.toString();  
-    }
-	
 	@RequestMapping(value = "", method = {RequestMethod.GET,
 			RequestMethod.POST})
 	public String getWeixin(HttpServletRequest httpRequest,
 			HttpServletResponse httpResponse) {
-		Map<String, String[]> m = httpRequest.getParameterMap();
-		for (Entry<String, String[]> entry : m.entrySet()) {
-			System.out.println("key = " + entry.getKey() + "&value = " + entry.getValue()[0]);
-			
-		}
+		WechatBase wechatBase = new WechatBase(httpRequest);
 		String result = "";
 		//更换 地址的验证
 		if (m.containsKey("echostr")) {
@@ -87,7 +70,14 @@ public class RestTest {
 		//处理微信的推送消息
 		else {
 			try {
-				result = testMessageReceive(getXml(httpRequest));
+				String content = wechatBase.getContent();
+				if (m.containsKey("msg_signature")) {
+					String msg_signature = wechatBase.getMsg_signature();
+					String timestamp =wechatBase.getTimestamp();
+					String nonce = wechatBase.getNonce();
+					content = WechatHaoHelper.getInstance().decodeXml(content, msg_signature, timestamp, nonce);
+				}
+				result = testMessageReceive(content, wechatBase);
 			} catch (Exception e) {
 				if (e instanceof EventException) {
 					//模板推送的过滤处理
@@ -102,7 +92,7 @@ public class RestTest {
 
 	}
 	
-	private String resultXml(RecvMessage message, boolean check) {
+	private String resultXml(RecvMessage message, WechatBase wechatBase) {
 		String result = null;
 		System.out.println(message.getFromUserName());
 		System.out.println(message.getMsgType());
@@ -114,6 +104,14 @@ public class RestTest {
 			System.out.println(content);
 //			result = wechat.msg().respText(message, content);
 			result = WechatHaoHelper.getInstance().replyXmlText(message, content);
+			UserList list = WechatHaoHelper.getInstance().getUsers();
+			for (String openid : list.getData().getOpenId()) {
+				System.out.println("openid:" + openid);
+				User user = WechatHaoHelper.getInstance().getUserDetail(openid);
+				System.out.println(user.getUnionId());
+				System.out.println(user.toString());
+			}
+			
 		}
 		//点击菜单的事件推送
 		else if (message instanceof RecvMenuEvent) {
@@ -136,10 +134,18 @@ public class RestTest {
 			// result = wechat.msg().respNews(message,articles);
 			result = WechatHaoHelper.getInstance().replyXmlArticles(message, articles);
 		}
+		String timestamp = wechatBase.getTimestamp();
+		String nonce = wechatBase.getNonce();
+		try {
+			result =  WechatHaoHelper.getInstance().encodeXml(result, timestamp, nonce);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		return result;
 	}
 	
-	    public String testMessageReceive(String xml){
+	    public String testMessageReceive(String xml, WechatBase wechatBase){
 //	        xml = "<xml>\n" +
 //	                " <ToUserName><![CDATA[toUser]]></ToUserName>\n" +
 //	                " <FromUserName><![CDATA[fromUser]]></FromUserName> \n" +
@@ -150,7 +156,7 @@ public class RestTest {
 //	                " </xml>";
 //	        RecvMessage message = wechat.msg().receive(xml);
 	    	RecvMessage message = WechatHaoHelper.getInstance().parseMessageXml(xml);
-	        return resultXml(message, message instanceof RecvMsg && message instanceof RecvTextMessage);
+	        return resultXml(message, wechatBase);
 	        //	        xml = "<xml>\n" +
 //	                " <ToUserName><![CDATA[toUser]]></ToUserName>\n" +
 //	                " <FromUserName><![CDATA[fromUser]]></FromUserName>\n" +

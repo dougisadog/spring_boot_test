@@ -1,24 +1,31 @@
 package boot_test;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.StringReader;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import javax.servlet.ServletInputStream;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
+
 import me.hao0.wechat.core.Callback;
 import me.hao0.wechat.core.MenuBuilder;
-import me.hao0.wechat.core.Wechat;
-import me.hao0.wechat.core.WechatBuilder;
 import me.hao0.wechat.model.menu.Menu;
 import me.hao0.wechat.model.message.send.TemplateField;
+import util.wechatHelper.WechatHaoHelper;
+import util.wechatHelper.aes.AesException;
+import util.wechatHelper.aes.WXBizMsgCrypt;
 
 /**
  * Rest 返回對象的json
@@ -27,6 +34,64 @@ import me.hao0.wechat.model.message.send.TemplateField;
 @RestController
 @RequestMapping("/weiixinback")
 public class RestWeixinBack {
+	
+	private void test() throws Exception {
+		String encodingAesKey = "abcdefghijklmnopqrstuvwxyz0123456789ABCDEFG";
+		String token = "pamtest";
+		String timestamp = "1409304348";
+		String nonce = "xxxxxx";
+		String appId = "wxb11529c136998cb6";
+		String replyMsg = " 中文<xml><ToUserName><![CDATA[oia2TjjewbmiOUlr6X-1crbLOvLw]]></ToUserName><FromUserName><![CDATA[gh_7f083739789a]]></FromUserName><CreateTime>1407743423</CreateTime><MsgType><![CDATA[video]]></MsgType><Video><MediaId><![CDATA[eYJ1MbwPRJtOvIEabaxHs7TX2D-HV71s79GUxqdUkjm6Gs2Ed1KF3ulAOA9H1xG0]]></MediaId><Title><![CDATA[testCallBackReplyVideo]]></Title><Description><![CDATA[testCallBackReplyVideo]]></Description></Video></xml>";
+
+		WXBizMsgCrypt pc = new WXBizMsgCrypt(token, encodingAesKey, appId);
+		String mingwen = pc.encryptMsg(replyMsg, timestamp, nonce);
+		System.out.println("加密后: " + mingwen);
+
+		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+		DocumentBuilder db = dbf.newDocumentBuilder();
+		StringReader sr = new StringReader(mingwen);
+		InputSource is = new InputSource(sr);
+		Document document = db.parse(is);
+
+		Element root = document.getDocumentElement();
+		NodeList nodelist1 = root.getElementsByTagName("Encrypt");
+		NodeList nodelist2 = root.getElementsByTagName("MsgSignature");
+
+		String encrypt = nodelist1.item(0).getTextContent();
+		String msgSignature = nodelist2.item(0).getTextContent();
+
+		String format = "<xml><ToUserName><![CDATA[toUser]]></ToUserName><Encrypt><![CDATA[%1$s]]></Encrypt></xml>";
+		String fromXML = String.format(format, encrypt);
+
+		//
+		// 公众平台发送消息给第三方，第三方处理
+		//
+
+		// 第三方收到公众号平台发送的消息
+		String result2 = pc.decryptMsg(msgSignature, timestamp, nonce, fromXML);
+		System.out.println("解密后明文: " + result2);
+		
+		//pc.verifyUrl(null, null, null, null);
+	}
+	
+	@RequestMapping(value = "", method = {RequestMethod.GET,
+			RequestMethod.POST})
+	public String getAccess(HttpServletRequest httpRequest,
+			HttpServletResponse httpResponse) {
+		Map<String, String[]> m = httpRequest.getParameterMap();
+		for (Entry<String, String[]> entry : m.entrySet()) {
+			System.out.println("key = " + entry.getKey() + "&value = " + entry.getValue()[0]);
+			
+		}
+		try {
+			test();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return "success";
+
+	}
 	
 	@RequestMapping(value = "/sendtemplate", method = {RequestMethod.GET,
 			RequestMethod.POST})

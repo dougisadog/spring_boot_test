@@ -1,10 +1,8 @@
-package boot_test;
+package util.wechatHelper;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
-import org.apache.commons.lang.StringUtils;
 
 import entity.MenuItem;
 import me.hao0.wechat.core.Callback;
@@ -17,6 +15,10 @@ import me.hao0.wechat.model.message.receive.event.RecvMenuEvent;
 import me.hao0.wechat.model.message.receive.msg.RecvTextMessage;
 import me.hao0.wechat.model.message.resp.Article;
 import me.hao0.wechat.model.message.send.TemplateField;
+import me.hao0.wechat.model.user.User;
+import me.hao0.wechat.model.user.UserList;
+import util.wechatHelper.aes.AesException;
+import util.wechatHelper.aes.WXBizMsgCrypt;
 
 public class WechatHaoHelper {
 
@@ -24,13 +26,52 @@ public class WechatHaoHelper {
 	
     private Wechat wechat;
     
+    private WXBizMsgCrypt pc;
+    
+//    private final static String APP_ID = "wx39bb940a2cc30c6b";
+//    
+//    private final static String APP_SECRET = "03ff7c0fedfa63c6d54294e08b6333b6";
+    
+    private final static String APP_ID = "wx0ca51c740253dd75";
+    
+    private final static String APP_SECRET = "9dc0de34b1949e390d043eb266211fc8";
+    
+    private final static String APP_MSG_KEY = "xvv2igfFxRrdJklnOTCiXootjuy3ZlCYW7YIWMwaJkv";
+    
+    private final static String APP_TOKEN = "dougisadog";
+    
+    private boolean NEED_TOKEN = true;
+    
     /**
      * appid appsecret可修改为 文件props读取
      */
 	private WechatHaoHelper() {
-		wechat = WechatBuilder.newBuilder("wx39bb940a2cc30c6b", "03ff7c0fedfa63c6d54294e08b6333b6")
+		wechat = WechatBuilder.newBuilder(APP_ID, APP_SECRET).msgKey(APP_MSG_KEY)
                 .build();
+		try {
+			pc = new WXBizMsgCrypt(APP_TOKEN, APP_MSG_KEY, APP_ID);
+		} catch (AesException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 	};
+	
+	public String encodeXml(String orginXml, String timestamp, String nonce) throws Exception {
+		if (!NEED_TOKEN) return orginXml;
+		String mingwen = pc.encryptMsg(orginXml, timestamp, nonce);
+		System.out.println("加密后: " + mingwen);
+		return mingwen;
+	}
+	
+	public String decodeXml(String orginXml, String msgSignature, String timestamp, String nonce) throws Exception {
+		if (!NEED_TOKEN) return orginXml;
+
+		// 第三方收到公众号平台发送的消息
+		String mingwen = pc.decryptMsg(msgSignature, timestamp, nonce, orginXml);
+		System.out.println("解密后明文: " + mingwen);
+		return mingwen;
+	}
 
 	public static WechatHaoHelper getInstance() {
 		if (null == wechatHaoHelper)
@@ -52,6 +93,16 @@ public class WechatHaoHelper {
 		Long msgId = wechat.msg().sendTemplate(openId, templateId, fields, link);
 		return msgId + "";
 	}
+	
+	public User getUserDetail(String openId) {
+		 return wechat.user().getUser(openId);
+	}
+	
+	public UserList getUsers() {
+		 return wechat.user().getUsers(null);
+	}
+	
+	 
 	
 	/**
 	 * 回复文字
